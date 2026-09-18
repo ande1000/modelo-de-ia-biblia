@@ -17,10 +17,13 @@ def carregar_tudo():
     modelo_emb = SentenceTransformer('all-MiniLM-L6-v2')
     emb_biblia = modelo_emb.encode(pedacos, show_progress_bar=False)
     
-    # 3. Carrega o cérebro (Qwen 0.5B - o menor possível)
+    # 3. Carrega o cérebro (Qwen 0.5B)
     model_id = "Qwen/Qwen2.5-0.5B-Instruct" 
     tokenizer = AutoTokenizer.from_pretrained(model_id)
-    modelo_llm = AutoModelForCausalLM.from_pretrained(model_id, device_map="cpu", torch_dtype=torch.float32)
+    
+    # AQUI ESTÁ A CORREÇÃO: Removemos o device_map="cpu"
+    modelo_llm = AutoModelForCausalLM.from_pretrained(model_id, torch_dtype=torch.float32)
+    
     pipe = pipeline("text-generation", model=modelo_llm, tokenizer=tokenizer, max_new_tokens=150)
     
     return pedacos, modelo_emb, emb_biblia, pipe
